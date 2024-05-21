@@ -7,7 +7,8 @@ object Dependencies {
   private val ammoniteOpsV = "2.4.1"
   private val apacheHttpClientV = "4.5.13"
   private val apacheHttpClient5V = "5.3.1"
-  private val awsSdkV = "2.17.265"
+  private val awsS3NioV = "2.0.3"
+  private val awsSdkV = "2.25.53"
   // We would like to use the BOM to manage Azure SDK versions, but SBT doesn't support it.
   // https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/boms/azure-sdk-bom
   // https://github.com/sbt/sbt/issues/4531
@@ -383,22 +384,10 @@ object Dependencies {
     "com.google.api.grpc" % "proto-google-cloud-resourcemanager-v3" % "1.17.0"
   )
 
-  /*
-  Used instead of `"org.lerch" % "s3fs" % s3fsV exclude("org.slf4j", "jcl-over-slf4j")`
-  org.lerch:s3fs:1.0.1 depends on a preview release of software.amazon.awssdk:s3.
-
-  Instead the code has been re-forked into this repo, just like many of the other FileSystemProvider extensions.
-   */
-  private val s3fsDependencies = List(
-    "com.google.code.findbugs" % "jsr305" % jsr305V,
-    "com.google.guava" % "guava" % guavaV,
-    "org.apache.tika" % "tika-core" % tikaV,
-    "software.amazon.awssdk" % "s3" % awsSdkV,
-  ) ++ slf4jBindingDependencies
-
   private val awsCloudDependencies = List(
+    "software.amazon.nio.s3" % "aws-java-nio-spi-for-s3" % awsS3NioV,
     "com.fasterxml.jackson.core" % "jackson-annotations" % jacksonV,
-  ) ++ s3fsDependencies ++ List(
+  ) ++ List(
     "batch",
     "core",
     "cloudwatchlogs",
@@ -661,7 +650,7 @@ object Dependencies {
     "io.spray" %% "spray-json" % sprayJsonV,
   ) ++ circeDependencies ++ catsDependencies ++ slf4jBindingDependencies ++ languageFactoryDependencies ++ azureDependencies
 
-  val allProjectDependencies: List[ModuleID] =
+  val allProjectDependencies: List[ModuleID] = {
     backendDependencies ++
       centaurDependencies ++
       cloudSupportDependencies ++
@@ -688,6 +677,7 @@ object Dependencies {
       wes2cromwellDependencies ++
       womDependencies ++
       womtoolDependencies
+  }
 
   /*
   If you see warnings from SBT about evictions, insert a specific dependency version into this list.
